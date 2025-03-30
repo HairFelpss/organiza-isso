@@ -1,0 +1,10 @@
+{
+  "name": "@organiza-isso-app/zod",
+  "version": "0.0.1",
+  "private": true,
+  "main": "index.ts",
+  "dependencies": {
+    "zod": "3.24.2",
+    "@organiza-isso-app/typescript-config": "workspace:*"
+  }
+}
