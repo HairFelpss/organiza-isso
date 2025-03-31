@@ -18,6 +18,8 @@ model User {
   email        String        @unique
   password     String
   name         String
+  phone        String?       @unique
+  document     String?       @unique
   role         Role
   provider     Provider?
   appointments Appointment[] @relation("ClientAppointments")
@@ -25,20 +27,36 @@ model User {
   updatedAt    DateTime      @updatedAt
 }
 
+model Establishment {
+  id        String     @id @default(uuid())
+  name      String
+  address   String?
+  phone     String?
+  openTime  String // e.g. "08:00"
+  closeTime String // e.g. "18:00"
+  providers Provider[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
 model Provider {
-  id                 String        @id @default(uuid())
-  userId             String        @unique
+  id                 String         @id @default(uuid())
+  userId             String         @unique
+  establishmentId    String?
   businessName       String
   specialties        String[]
   profileDescription String?
-  averageRating      Float         @default(0)
-  totalRatings       Int           @default(0)
-  totalAppointments  Int           @default(0)
-  user               User          @relation(fields: [userId], references: [id])
+  subscriptionPlan   Plan           @default(FREE)
+  isActive           Boolean        @default(true)
+  averageRating      Float          @default(0)
+  totalRatings       Int            @default(0)
+  totalAppointments  Int            @default(0)
+  user               User           @relation(fields: [userId], references: [id])
+  establishment      Establishment? @relation(fields: [establishmentId], references: [id])
   schedules          Schedule[]
-  appointments       Appointment[] @relation("ProviderAppointments")
-  createdAt          DateTime      @default(now())
-  updatedAt          DateTime      @updatedAt
+  appointments       Appointment[]  @relation("ProviderAppointments")
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
 }
 
 model Schedule {
@@ -78,4 +96,10 @@ enum Status {
   PENDING
   CONFIRMED
   CANCELED
+}
+
+enum Plan {
+  FREE
+  PRO
+  PREMIUM
 }

@@ -32,15 +32,13 @@ export const LoginSchema = z.object({
 
 export type LoginDto = z.infer<typeof LoginSchema>;
 
-export const RegisterSchema = z.object({
+export const RegisterRawSchema = z.object({
   email: z.string().email(),
-  name: z.string().min(2),
+  name: z.string(),
+  document: z.string().min(11).max(11),
+  phone: z.string().min(10).max(11),
   password: z.string().min(6),
   confirmPassword: z.string().min(6),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ['confirmPassword'],
 });
 
-export type RegisterDto = z.infer<typeof RegisterSchema>;
 
