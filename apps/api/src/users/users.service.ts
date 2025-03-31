@@ -1,62 +1,42 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { Role } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UsersRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly usersRepository: UsersRepository) {}
 
   async create(data: CreateUserDto) {
-    // Verifica se o email já está cadastrado
-    const existingUser = await this.prisma.user.findUnique({
-      where: { email: data.email },
-    });
+    const { email, document, phone } = data;
 
-    if (existingUser) {
+    if (await this.usersRepository.findByEmail(email)) {
+      throw new NotFoundException(`Usuário com email ${email} já cadastrado`);
+    }
+
+    if (await this.usersRepository.findByCpf(document)) {
+      throw new NotFoundException(`Usuário com CPF ${document} já cadastrado`);
+    }
+
+    if (await this.usersRepository.findByPhone(phone)) {
       throw new NotFoundException(
-        `Usuário com email ${data.email} já cadastrado`,
+        `Usuário com telefone ${phone} já cadastrado`,
       );
     }
 
-    // Verifica se o CPF já está cadastrado
-    const existingCpf = await this.prisma.user.findUnique({
-      where: { cpf: data.cpf },
+    return this.usersRepository.create({
+      ...data,
+      role: Role.CLIENT,
     });
-
-    if (existingCpf) {
-      throw new NotFoundException(`Usuário com CPF ${data.cpf} já cadastrado`);
-    }
-
-    // Verifica se o telefone já está cadastrado
-    const existingPhone = await this.prisma.user.findUnique({
-      where: { phone: data.phone },
-    });
-
-    if (existingPhone) {
-      throw new NotFoundException(
-        `Usuário com telefone ${data.phone} já cadastrado`,
-      );
-    }
-
-    const user = await this.prisma.user.create({ data });
-    return user;
   }
 
   async findAll() {
-    return this.prisma.user.findMany({
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        createdAt: true,
-      },
-    });
+    return this.usersRepository.findAll();
   }
 
   async findOne(id: string) {
-    const user = await this.prisma.user.findUnique({ where: { id } });
+    const user = await this.usersRepository.findById(id);
 
     if (!user) {
       throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
@@ -66,26 +46,26 @@ export class UsersService {
   }
 
   async update(id: string, data: UpdateUserDto) {
-    const user = await this.prisma.user.findUnique({ where: { id } });
+    console.log('id -> ', id);
+    console.log('data -> ', data);
+
+    const user = await this.usersRepository.findById(id);
 
     if (!user) {
       throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
     }
 
-    return this.prisma.user.update({
-      where: { id },
-      data,
-    });
+    return this.usersRepository.update(id, data);
   }
 
   async remove(id: string) {
-    const user = await this.prisma.user.findUnique({ where: { id } });
+    const user = await this.usersRepository.findById(id);
 
     if (!user) {
       throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
     }
 
-    await this.prisma.user.delete({ where: { id } });
+    await this.usersRepository.delete(id);
 
     return { message: 'Usuário removido com sucesso', id };
   }
