@@ -14,7 +14,7 @@ export class UsersRepository {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
-  async findByCpf(document: string) {
+  async findByDocument(document: string) {
     return this.prisma.user.findUnique({ where: { document } });
   }
 

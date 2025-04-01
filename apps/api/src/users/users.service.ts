@@ -15,7 +15,7 @@ export class UsersService {
       throw new NotFoundException(`Usuário com email ${email} já cadastrado`);
     }
 
-    if (await this.usersRepository.findByCpf(document)) {
+    if (await this.usersRepository.findByDocument(document)) {
       throw new NotFoundException(`Usuário com CPF ${document} já cadastrado`);
     }
 
