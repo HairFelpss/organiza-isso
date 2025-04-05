@@ -58,7 +58,7 @@ CREATE TABLE "Professional" (
 -- CreateTable
 CREATE TABLE "Schedule" (
     "id" TEXT NOT NULL,
-    "providerId" TEXT NOT NULL,
+    "professionalId" TEXT NOT NULL,
     "dateTime" TIMESTAMP NOT NULL,
     "duration" INTEGER NOT NULL,
     "isAvailable" BOOLEAN NOT NULL DEFAULT true,
@@ -71,7 +71,7 @@ CREATE TABLE "Schedule" (
 -- CreateTable
 CREATE TABLE "Appointment" (
     "id" TEXT NOT NULL,
-    "providerId" TEXT NOT NULL,
+    "professionalId" TEXT NOT NULL,
     "clientId" TEXT NOT NULL,
     "scheduleId" TEXT NOT NULL,
     "status" "Status" NOT NULL DEFAULT 'PENDING',
@@ -117,10 +117,10 @@ ALTER TABLE "Professional" ADD CONSTRAINT "Professional_userId_fkey" FOREIGN KEY
 ALTER TABLE "Professional" ADD CONSTRAINT "Professional_establishmentId_fkey" FOREIGN KEY ("establishmentId") REFERENCES "Establishment"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Schedule" ADD CONSTRAINT "Schedule_providerId_fkey" FOREIGN KEY ("providerId") REFERENCES "Professional"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Schedule" ADD CONSTRAINT "Schedule_professionalId_fkey" FOREIGN KEY ("professionalId") REFERENCES "Professional"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Appointment" ADD CONSTRAINT "Appointment_providerId_fkey" FOREIGN KEY ("providerId") REFERENCES "Professional"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Appointment" ADD CONSTRAINT "Appointment_professionalId_fkey" FOREIGN KEY ("professionalId") REFERENCES "Professional"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Appointment" ADD CONSTRAINT "Appointment_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -1,84 +1,175 @@
-# Turborepo starter
+# Organiza Isso - Plataforma de Agendamento
 
-This Turborepo starter is maintained by the Turborepo core team.
+Organiza Isso é uma aplicação fullstack moderna para agendamento de serviços com prestadores. Este repositório segue um monorepo com organização em pacotes (Zod, configurações de TS) e aplicações (API REST NestJS).
 
-## Using this example
+---
 
-Run the following command:
+## 💻 Monorepo com Turborepo
 
-```sh
-npx create-turbo@latest
-```
+Este projeto utiliza o [Turborepo](https://turbo.build/repo) para organização de apps e pacotes compartilhados:
 
-## What's inside?
+### Aplicativos (apps)
+- `api`: Backend NestJS
+- `web`: Frontend Web (Next.js)
+- `docs`: Documentação (Next.js)
 
-This Turborepo includes the following packages/apps:
+### Pacotes (packages)
+- `@organiza-isso-app/zod`: Schemas e validações compartilhadas (Zod)
+- `@organiza-isso-app/ui`: Componentes React reutilizáveis
+- `@organiza-isso-app/eslint-config`: Configuração de ESLint compartilhada
+- `@organiza-isso-app/typescript-config`: `tsconfig.json` centralizado
 
-### Apps and Packages
+---
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@organiza-isso-app/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@organiza-isso-app/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@organiza-isso-app/typescript-config`: `tsconfig.json`s used throughout the monorepo
+## 💡 Tecnologias Utilizadas
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+- **Monorepo:** Turborepo + PNPM workspaces
+- **Backend:** NestJS, Prisma ORM, Zod, JWT
+- **Frontend Web:** Next.js (React)
+- **Mobile:** React Native (Expo)
+- **Infra:** AWS (ECS Fargate, Aurora, SES, S3, CloudFront, Cognito)
 
-### Utilities
+---
 
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
+## 🚀 Estrutura da API REST
 
 ```
-cd my-turborepo
+/api/v1
+  ├── /auth           # login, registro, refresh
+  ├── /users          # perfil, gerenciamento
+  ├── /professionals   # agenda pública, horários
+  ├── /appointments   # reservas, lista de espera
+  └── /notifications  # envio de push/email
+```
+
+---
+
+## 🚀 Funcionalidades
+
+### Web (Next.js)
+- Horários disponíveis dos prestadores
+- Painel de gerenciamento de agenda
+- Autenticação JWT com cookies HttpOnly
+
+### Mobile (React Native)
+- Agendamento intuitivo
+- Visualização de agenda e horários
+- Notificações push (Firebase)
+
+---
+
+## 📆 Banco de Dados
+
+- **Database:** AWS Aurora PostgreSQL Serverless
+- **ORM:** Prisma ORM
+- **Cache:** Redis (ElastiCache)
+
+### Estrutura principal:
+```
+Users: id, email, password, role
+Professionals: id, userId, specialties
+Appointments: id, providerId, clientId, scheduleId, status
+Notifications: id, userId, type, message, deliveredAt
+Schedule: id, professionalId, dateTime, isAvailable
+```
+
+---
+
+## 📨 Notificações
+- **Push:** Firebase Cloud Messaging (FCM)
+- **Emails:** AWS SES
+
+---
+
+## 💼 Armazenamento e CDN
+- **Arquivos:** Amazon S3
+- **Distribuição:** AWS CloudFront
+
+---
+
+## ⚖️ Fluxo de Reserva
+
+1. Cliente acessa agenda de um prestador
+2. Agenda ou entra em lista de espera
+3. Verificação em tempo real
+4. Reserva gera notificação
+5. Fila é atualizada automaticamente
+
+---
+
+## ⚙️ Infraestrutura AWS Recomendada
+
+- **Compute:** ECS Fargate ou Lambda
+- **Auth:** Cognito (posteriormente Keycloak)
+- **Mensageria:** SQS ou EventBridge
+- **CDN & Armazenamento:** CloudFront + S3
+- **Deploy CI/CD:** GitHub Actions / AWS CodePipeline
+
+---
+
+## 🔒 Segurança
+- HTTPS + criptografia de dados
+- JWT via cookies HttpOnly
+- RBAC com `@RoleGuard`
+
+---
+
+## 📊 Observabilidade
+- AWS CloudWatch, AWS X-Ray
+- Integração com Datadog / NewRelic (opcional)
+
+---
+
+## 🚡 Performance e Escalabilidade
+- Auto-scaling (ECS Fargate)
+- Prisma com Aurora Serverless
+- Cache Redis para sessões e dados
+- CDN para conteúdo estático
+
+---
+
+## 🔧 Ferramentas de Dev
+- ESLint + Prettier + Husky
+- Zod para validação
+- `nestjs-zod` para pipe validation
+- Terraform (IaC)
+
+---
+
+## ⚒️ Comandos úteis
+
+```bash
+# Build do projeto
 pnpm build
-```
 
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
+# Dev local (API, Web, etc)
 pnpm dev
+
+# Testes automatizados
+pnpm --filter=api test
+
+# Formatador
+pnpm format
 ```
 
-### Remote Caching
+---
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+## ☑️ Requisitos de Desenvolvimento
+- Node 18+
+- PNPM
+- Docker (opcional para DB local)
+- Prisma CLI
+- Firebase CLI (notificações)
 
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+---
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-npx turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
+## 🔗 Links úteis
+- [Turborepo Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
 - [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+- [Zod](https://github.com/colinhacks/zod)
+- [Prisma](https://www.prisma.io/docs/)
+- [NestJS](https://docs.nestjs.com/)
+
+---
+
+> Projeto em evolução constante! Contribuições e sugestões são bem-vindas. ✨

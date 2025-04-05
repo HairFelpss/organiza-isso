@@ -10,17 +10,18 @@ datasource db {
 }
 
 model User {
-  id           String        @id @default(uuid())
-  email        String        @unique
+  id           String         @id @default(uuid())
+  email        String         @unique
   password     String
   name         String
-  phone        String?       @unique
-  document     String?       @unique
+  phone        String?        @unique
+  document     String?        @unique
   role         Role
   professional Professional?
-  appointments Appointment[] @relation("ClientAppointments")
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  appointments Appointment[]  @relation("ClientAppointments")
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  Notification Notification[]
 }
 
 model Establishment {
@@ -50,7 +51,7 @@ model Professional {
   user               User           @relation(fields: [userId], references: [id])
   establishment      Establishment? @relation(fields: [establishmentId], references: [id])
   schedules          Schedule[]
-  appointments       Appointment[]  @relation("ProviderAppointments")
+  appointments       Appointment[]  @relation("ProfessionalAppointments")
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
 
@@ -58,28 +59,28 @@ model Professional {
 }
 
 model Schedule {
-  id          String       @id @default(uuid())
-  providerId  String
-  dateTime    DateTime     @db.Timestamp
-  duration    Int
-  isAvailable Boolean      @default(true)
-  appointment Appointment?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @default(now())
+  id             String       @id @default(uuid())
+  professionalId String
+  dateTime       DateTime     @db.Timestamp
+  duration       Int
+  isAvailable    Boolean      @default(true)
+  appointment    Appointment?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @default(now())
 
-  professional Professional @relation(fields: [providerId], references: [id])
+  professional Professional @relation(fields: [professionalId], references: [id])
 }
 
 model Appointment {
-  id         String   @id @default(uuid())
-  providerId String
-  clientId   String
-  scheduleId String   @unique
-  status     Status   @default(PENDING)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now())
+  id             String   @id @default(uuid())
+  professionalId String
+  clientId       String
+  scheduleId     String   @unique
+  status         Status   @default(PENDING)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now())
 
-  professional Professional @relation(fields: [providerId], references: [id], name: "ProviderAppointments")
+  professional Professional @relation(fields: [professionalId], references: [id], name: "ProfessionalAppointments")
   client       User         @relation(fields: [clientId], references: [id], name: "ClientAppointments")
   schedule     Schedule     @relation(fields: [scheduleId], references: [id])
   rating       Rating? // ✅ Relacionamento com avaliação
@@ -93,6 +94,16 @@ model Rating {
   createdAt     DateTime @default(now())
 
   appointment Appointment @relation(fields: [appointmentId], references: [id])
+}
+
+model Notification {
+  id          String           @id @default(uuid())
+  userId      String
+  type        NotificationType
+  message     String
+  deliveredAt DateTime?
+
+  user User @relation(fields: [userId], references: [id])
 }
 
 enum Role {
@@ -111,4 +122,9 @@ enum Plan {
   FREE
   PRO
   PREMIUM
+}
+
+enum NotificationType {
+  EMAIL
+  PUSH
 }

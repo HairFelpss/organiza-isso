@@ -20,3 +20,13 @@ export const CreateProfessionalSchema = z.object({
 });
 
 export type CreateProfessionalDto = z.infer<typeof CreateProfessionalSchema>;
+
+// packages/zod/schemas/professional.schema.ts
+export const CreateProfessionalInput = ProfessionalSchema.omit({
+  id: true,
+  userId: true,
+  averageRating: true,
+  totalRatings: true,
+  totalAppointments: true,
+});
+

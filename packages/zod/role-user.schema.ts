@@ -9,6 +9,7 @@ export const UpdateUserRoleSchema = z.object({
 });
 
 export type UpdateUserRoleDto = z.infer<typeof UpdateUserRoleSchema>;
+
 export const UserSchema = z.object({
   id: z.string().uuid(),
   email: z.string().email(),
