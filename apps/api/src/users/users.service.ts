@@ -1,5 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Role } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersRepository } from './users.repository';
@@ -25,10 +24,7 @@ export class UsersService {
       );
     }
 
-    return this.usersRepository.create({
-      ...data,
-      role: Role.CLIENT,
-    });
+    return this.usersRepository.create(data);
   }
 
   async findAll() {

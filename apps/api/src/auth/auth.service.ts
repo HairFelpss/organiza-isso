@@ -3,7 +3,6 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Role } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { UsersRepository } from '../users/users.repository';
 import { AuthenticateDto } from './dto/authenticate.dto';
@@ -35,10 +34,7 @@ export class AuthService {
 
     data.password = hashedPassword;
 
-    return this.usersRepository.create({
-      ...data,
-      role: Role.CLIENT,
-    });
+    return this.usersRepository.create(data);
   }
 
   async authenticate(registerUserDto: AuthenticateDto) {

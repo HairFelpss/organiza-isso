@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const ProviderSchema = z.object({
+export const ProfessionalSchema = z.object({
   id: z.string().uuid(),
   userId: z.string().uuid(),
   businessName: z.string().min(2),
@@ -11,12 +11,12 @@ export const ProviderSchema = z.object({
   totalAppointments: z.number().int().default(0),
 });
 
-export type Provider = z.infer<typeof ProviderSchema>;
+export type Professional = z.infer<typeof ProfessionalSchema>;
 
-export const CreateProviderSchema = z.object({
+export const CreateProfessionalSchema = z.object({
   businessName: z.string().min(2),
   specialties: z.array(z.string()).min(1),
   profileDescription: z.string().optional(),
 });
 
-export type CreateProviderDto = z.infer<typeof CreateProviderSchema>;
+export type CreateProfessionalDto = z.infer<typeof CreateProfessionalSchema>;

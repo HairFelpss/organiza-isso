@@ -1,8 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// schema.prisma
 
 generator client {
   provider = "prisma-client-js"
@@ -21,25 +17,25 @@ model User {
   phone        String?       @unique
   document     String?       @unique
   role         Role
-  provider     Provider?
+  professional Professional?
   appointments Appointment[] @relation("ClientAppointments")
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 }
 
 model Establishment {
-  id        String     @id @default(uuid())
-  name      String
-  address   String?
-  phone     String?
-  openTime  String // e.g. "08:00"
-  closeTime String // e.g. "18:00"
-  providers Provider[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id            String         @id @default(uuid())
+  name          String
+  address       String?
+  phone         String?
+  openTime      String // e.g. "08:00"
+  closeTime     String // e.g. "18:00"
+  professionals Professional[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 }
 
-model Provider {
+model Professional {
   id                 String         @id @default(uuid())
   userId             String         @unique
   establishmentId    String?
@@ -57,19 +53,21 @@ model Provider {
   appointments       Appointment[]  @relation("ProviderAppointments")
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
+
+  @@map("Professional")
 }
 
 model Schedule {
   id          String       @id @default(uuid())
   providerId  String
   dateTime    DateTime     @db.Timestamp
-  duration    Int // duração em minutos
+  duration    Int
   isAvailable Boolean      @default(true)
   appointment Appointment?
   createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  updatedAt   DateTime     @default(now())
 
-  provider Provider @relation(fields: [providerId], references: [id])
+  professional Professional @relation(fields: [providerId], references: [id])
 }
 
 model Appointment {
@@ -79,16 +77,27 @@ model Appointment {
   scheduleId String   @unique
   status     Status   @default(PENDING)
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  updatedAt  DateTime @default(now())
 
-  provider Provider @relation(fields: [providerId], references: [id], name: "ProviderAppointments")
-  client   User     @relation(fields: [clientId], references: [id], name: "ClientAppointments")
-  schedule Schedule @relation(fields: [scheduleId], references: [id])
+  professional Professional @relation(fields: [providerId], references: [id], name: "ProviderAppointments")
+  client       User         @relation(fields: [clientId], references: [id], name: "ClientAppointments")
+  schedule     Schedule     @relation(fields: [scheduleId], references: [id])
+  rating       Rating? // ✅ Relacionamento com avaliação
+}
+
+model Rating {
+  id            String   @id @default(uuid())
+  appointmentId String   @unique
+  score         Int
+  comment       String?
+  createdAt     DateTime @default(now())
+
+  appointment Appointment @relation(fields: [appointmentId], references: [id])
 }
 
 enum Role {
   CLIENT
-  PROVIDER
+  PROFESSIONAL
   ADMIN
 }
 

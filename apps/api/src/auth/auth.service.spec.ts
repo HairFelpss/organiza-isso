@@ -87,7 +87,6 @@ describe('AuthService', () => {
       expect(usersRepository.create).toHaveBeenCalledWith(
         expect.objectContaining({
           email: data.email,
-          role: Role.CLIENT,
         }),
       );
       expect(result).toHaveProperty('id');

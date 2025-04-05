@@ -1,15 +1,9 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "ui": "tui",
   "tasks": {
     "build": {
       "dependsOn": [
-        "^build",
-        "^db:generate"
-      ],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        ".env*"
+        "^build"
       ],
       "outputs": [
         "dist/**",
@@ -35,6 +29,9 @@
       "persistent": true
     },
     "test": {
+      "dependsOn": [
+        "^test"
+      ],
       "outputs": [
         "coverage/**"
       ]
