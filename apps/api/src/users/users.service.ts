@@ -10,12 +10,12 @@ export class UsersService {
   async create(data: CreateUserDto) {
     const { email, document, phone } = data;
 
-    if (await this.usersRepository.findByEmail(email)) {
-      throw new NotFoundException(`Usuário com email ${email} já cadastrado`);
-    }
-
     if (await this.usersRepository.findByDocument(document)) {
       throw new NotFoundException(`Usuário com CPF ${document} já cadastrado`);
+    }
+
+    if (await this.usersRepository.findByEmail(email)) {
+      throw new NotFoundException(`Usuário com email ${email} já cadastrado`);
     }
 
     if (await this.usersRepository.findByPhone(phone)) {

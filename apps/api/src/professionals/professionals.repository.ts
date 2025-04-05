@@ -40,7 +40,7 @@ export class ProfessionalsRepository {
   findScheduleByProfessionalId(professionalId: string) {
     return this.prisma.schedule.findMany({
       where: {
-        providerId: professionalId,
+        professionalId: professionalId,
         isAvailable: true,
       },
       orderBy: {
@@ -52,7 +52,7 @@ export class ProfessionalsRepository {
   findRatingsByProfessionalId(professionalId: string) {
     return this.prisma.appointment.findMany({
       where: {
-        providerId: professionalId,
+        professionalId: professionalId,
         status: 'CONFIRMED',
         NOT: { rating: null },
       },
