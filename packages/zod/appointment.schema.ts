@@ -5,19 +5,20 @@ export type AppointmentStatus = z.infer<typeof AppointmentStatusSchema>;
 
 export const AppointmentSchema = z.object({
   id: z.string().uuid(),
-  professionalId: z.string().uuid(), // Corrigido de providerId para professionalId
+  professionalId: z.string().uuid(),
   clientId: z.string().uuid(),
   scheduleId: z.string().uuid(),
   status: AppointmentStatusSchema,
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
 });
 
 export type Appointment = z.infer<typeof AppointmentSchema>;
 
 export const CreateAppointmentSchema = z.object({
-  professionalId: z.string().uuid(), // Corrigido de providerId para professionalId
+  professionalId: z.string().uuid(),
   scheduleId: z.string().uuid(),
+  calendarBlockId: z.string().uuid(),
   status: AppointmentStatusSchema.optional(),
 });
 
@@ -31,7 +32,7 @@ export type UpdateAppointmentDto = z.infer<typeof UpdateAppointmentSchema>;
 
 export const UpdateAppointmentStatusSchema = z.object({
   appointmentId: z.string().uuid(),
-  status: z.enum(['CONFIRMED', 'CANCELED']),
+  status: AppointmentStatusSchema,
 });
 
 export type UpdateAppointmentStatusDto = z.infer<typeof UpdateAppointmentStatusSchema>;

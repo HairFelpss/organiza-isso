@@ -1,0 +1,14 @@
+{
+  "extends": "@organiza-isso-app/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "dist",          // saída dos arquivos compilados
+    "rootDir": "./",           // raiz do projeto para TypeScript
+    "composite": true,         // necessário em projetos com declaration + monorepo
+    "declaration": true,       // gera arquivos .d.ts
+    "incremental": true,      // gera arquivos .d.ts incrementais
+    "declarationMap": true,    // gera mapas dos arquivos .d.ts
+    "emitDeclarationOnly": true // evita gerar .js se quiser só os tipos (opcional)
+  },
+  "include": ["*.ts"],
+  "exclude": ["dist", "node_modules"]
+}

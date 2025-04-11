@@ -38,9 +38,11 @@ export class ProfessionalsRepository {
   }
 
   findScheduleByProfessionalId(professionalId: string) {
-    return this.prisma.schedule.findMany({
+    return this.prisma.calendarBlock.findMany({
       where: {
-        professionalId: professionalId,
+        calendar: {
+          professionalId: professionalId,
+        },
         isAvailable: true,
       },
       orderBy: {

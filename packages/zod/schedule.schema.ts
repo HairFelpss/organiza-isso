@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const ScheduleSchema = z.object({
   id: z.string().uuid(),
-  providerId: z.string().uuid(),
+  professionalId: z.string().uuid(),
   dateTime: z.string().datetime(),
   duration: z.number().int().positive(),
   isAvailable: z.boolean(),

@@ -4,27 +4,27 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { UsersRepository } from '../users/users.repository';
+import { UsersService } from '../users/users.service';
 import { AuthenticateDto } from './dto/authenticate.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { RegisterAuthDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(private readonly usersService: UsersService) {}
 
   async register(data: RegisterAuthDto) {
     const { email, document, phone } = data;
 
-    if (await this.usersRepository.findByEmail(email)) {
+    if (await this.usersService.findByEmail(email)) {
       throw new NotFoundException(`Usuário com email ${email} já cadastrado`);
     }
 
-    if (await this.usersRepository.findByDocument(document)) {
+    if (await this.usersService.findByDocument(document)) {
       throw new NotFoundException(`Usuário com CPF ${document} já cadastrado`);
     }
 
-    if (await this.usersRepository.findByPhone(phone)) {
+    if (await this.usersService.findByPhone(phone)) {
       throw new NotFoundException(
         `Usuário com telefone ${phone} já cadastrado`,
       );
@@ -34,13 +34,13 @@ export class AuthService {
 
     data.password = hashedPassword;
 
-    return this.usersRepository.create(data);
+    return this.usersService.create(data);
   }
 
   async authenticate(registerUserDto: AuthenticateDto) {
     const { email, password } = registerUserDto;
 
-    const user = await this.usersRepository.findByEmail(email);
+    const user = await this.usersService.findByEmail(email);
 
     if (!user) {
       throw new NotFoundException('Usuário não encontrado');
@@ -52,7 +52,6 @@ export class AuthService {
       throw new UnauthorizedException('Senha inválida');
     }
 
-    // Aqui você pode gerar e retornar um token JWT, se quiser.
     return {
       message: 'Login realizado com sucesso',
       user: {
@@ -67,7 +66,7 @@ export class AuthService {
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
     const { password, email } = forgotPasswordDto;
 
-    const user = await this.usersRepository.findByEmail(email);
+    const user = await this.usersService.findByEmail(email);
 
     if (!user) {
       throw new NotFoundException(`Usuário com email ${email} não encontrado`);
@@ -77,7 +76,7 @@ export class AuthService {
 
     const newPassword = hashedPassword;
 
-    return this.usersRepository.update(user.id, {
+    return this.usersService.update(user.id, {
       password: newPassword,
       email,
     });

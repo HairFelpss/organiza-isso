@@ -2,174 +2,191 @@
 
 Organiza Isso é uma aplicação fullstack moderna para agendamento de serviços com prestadores. Este repositório segue um monorepo com organização em pacotes (Zod, configurações de TS) e aplicações (API REST NestJS).
 
----
+## 💻 Frontend
 
-## 💻 Monorepo com Turborepo
+### Web (Next.js)
 
-Este projeto utiliza o [Turborepo](https://turbo.build/repo) para organização de apps e pacotes compartilhados:
+- **Framework:** Next.js (SSR/SSG)
+- **Deploy:** AWS Amplify ou Vercel
 
-### Aplicativos (apps)
-- `api`: Backend NestJS
-- `web`: Frontend Web (Next.js)
-- `docs`: Documentação (Next.js)
+**Funcionalidades:**
+- Página pública com horários de prestadores
+- Painel de gerenciamento (agenda e reservas)
+- Autenticação via JWT (Cognito/Keycloak)
 
-### Pacotes (packages)
-- `@organiza-isso-app/zod`: Schemas e validações compartilhadas (Zod)
-- `@organiza-isso-app/ui`: Componentes React reutilizáveis
-- `@organiza-isso-app/eslint-config`: Configuração de ESLint compartilhada
-- `@organiza-isso-app/typescript-config`: `tsconfig.json` centralizado
+### Mobile (React Native)
 
----
+- **Framework:** React Native (Expo opcional)
 
-## 💡 Tecnologias Utilizadas
-
-- **Monorepo:** Turborepo + PNPM workspaces
-- **Backend:** NestJS, Prisma ORM, Zod, JWT
-- **Frontend Web:** Next.js (React)
-- **Mobile:** React Native (Expo)
-- **Infra:** AWS (ECS Fargate, Aurora, SES, S3, CloudFront, Cognito)
+**Funcionalidades:**
+- Agendamento rápido e intuitivo
+- Visualização de agenda e horários
+- Notificações push (FCM)
+- Autenticação JWT (Cognito depois Keycloak)
 
 ---
 
-## 🚀 Estrutura da API REST
+## 🌐 Backend/API
+
+### Tecnologias
+
+- **Framework:** NestJS + TypeScript
+- **ORM:** Prisma ORM
+- **Validação:** Zod + nestjs-zod
+- **Autenticação:** JWT (com suporte a RBAC e @RoleGuard)
+- **Deploy:** AWS ECS Fargate ou Lambda
+
+### Estrutura REST
 
 ```
 /api/v1
-  ├── /auth           # login, registro, refresh
-  ├── /users          # perfil, gerenciamento
-  ├── /professionals   # agenda pública, horários
-  ├── /appointments   # reservas, lista de espera
-  └── /notifications  # envio de push/email
+  ├── /auth (login, registro, refresh)
+  ├── /users (perfil, gerenciamento)
+  ├── /professionals (agenda pública, horários)
+  ├── /appointments (reservas, fila de espera)
+  ├── /notifications (push e e-mails)
+  └── /companies (cadastro, profissionais, horários)
 ```
 
----
+### Autenticação
 
-## 🚀 Funcionalidades
-
-### Web (Next.js)
-- Horários disponíveis dos prestadores
-- Painel de gerenciamento de agenda
-- Autenticação JWT com cookies HttpOnly
-
-### Mobile (React Native)
-- Agendamento intuitivo
-- Visualização de agenda e horários
-- Notificações push (Firebase)
+- JWT com cookies HttpOnly
+- Inicial: AWS Cognito
+- Futuro: Keycloak via OAuth2
 
 ---
 
-## 📆 Banco de Dados
+## 📋 Banco de Dados
 
 - **Database:** AWS Aurora PostgreSQL Serverless
-- **ORM:** Prisma ORM
 - **Cache:** Redis (ElastiCache)
+- **ORM:** Prisma
 
-### Estrutura principal:
+### Estrutura:
+
 ```
-Users: id, email, password, role
-Professionals: id, userId, specialties
-Appointments: id, providerId, clientId, scheduleId, status
-Notifications: id, userId, type, message, deliveredAt
-Schedule: id, professionalId, dateTime, isAvailable
+Users
+  ├── id, email, password (hashed), role
+
+Companies
+  ├── id, name, description, ownerId, createdAt
+
+Professionals
+  ├── id, userId, specialties, profile, companyId
+
+Appointments
+  ├── id, providerId, clientId, scheduleId, status, assignedToId[]
+
+Notifications
+  ├── id, userId, type, message, deliveredAt
+
+Schedule
+  ├── id, professionalId, companyId, dateTime, isAvailable
 ```
 
 ---
 
 ## 📨 Notificações
+
 - **Push:** Firebase Cloud Messaging (FCM)
 - **Emails:** AWS SES
 
 ---
 
-## 💼 Armazenamento e CDN
+## 📂 Armazenamento
+
 - **Arquivos:** Amazon S3
-- **Distribuição:** AWS CloudFront
+- **CDN:** AWS CloudFront
 
 ---
 
 ## ⚖️ Fluxo de Reserva
 
-1. Cliente acessa agenda de um prestador
-2. Agenda ou entra em lista de espera
-3. Verificação em tempo real
-4. Reserva gera notificação
-5. Fila é atualizada automaticamente
+1. Cliente visualiza horários de um prestador ou empresa
+2. Reserva ou entra na lista de espera
+3. Disponibilidade é validada em tempo real
+4. Reserva confirmada gera notificações
+5. Lista de espera é notificada em desistências
+6. Agendamento é atribuído a um ou mais profissionais (`assignedToId[]`)
 
 ---
 
-## ⚙️ Infraestrutura AWS Recomendada
+## ⚙️ Infraestrutura AWS
 
-- **Compute:** ECS Fargate ou Lambda
-- **Auth:** Cognito (posteriormente Keycloak)
-- **Mensageria:** SQS ou EventBridge
-- **CDN & Armazenamento:** CloudFront + S3
-- **Deploy CI/CD:** GitHub Actions / AWS CodePipeline
+- **Compute:** AWS ECS (Fargate) ou Lambda
+- **Banco:** Aurora Serverless
+- **Autenticação:** Cognito (Keycloak futuramente)
+- **Cache:** Redis (ElastiCache)
+- **Mensageria:** SQS/EventBridge
+- **CI/CD:** GitHub Actions / AWS CodePipeline
 
 ---
 
-## 🔒 Segurança
-- HTTPS + criptografia de dados
-- JWT via cookies HttpOnly
-- RBAC com `@RoleGuard`
+## 🔐 Segurança
+
+- HTTPS + criptografia em repouso
+- Cookies HttpOnly (JWT)
+- RBAC com @RoleGuard e @RolesGuard
 
 ---
 
 ## 📊 Observabilidade
-- AWS CloudWatch, AWS X-Ray
-- Integração com Datadog / NewRelic (opcional)
+
+- **Logs:** AWS CloudWatch
+- **Tracing:** AWS X-Ray
+- **Monitoramento opcional:** Datadog ou NewRelic
 
 ---
 
-## 🚡 Performance e Escalabilidade
-- Auto-scaling (ECS Fargate)
-- Prisma com Aurora Serverless
-- Cache Redis para sessões e dados
-- CDN para conteúdo estático
+## ⚡️ Performance e Escalabilidade
+
+- Auto-scaling com ECS Fargate
+- Aurora com escalabilidade automática
+- Redis para cache e sessões
+- CDN com CloudFront
 
 ---
 
-## 🔧 Ferramentas de Dev
-- ESLint + Prettier + Husky
-- Zod para validação
-- `nestjs-zod` para pipe validation
-- Terraform (IaC)
+## 🔧 Ferramentas Adicionais
+
+- **Infraestrutura como Código:** Terraform
+- **CI/CD:** GitHub Actions / AWS CodePipeline
+- **Padronização:** ESLint, Prettier, Husky, Lint-staged
 
 ---
 
-## ⚒️ Comandos úteis
+## 🔹 Scripts Utilitários
 
 ```bash
-# Build do projeto
-pnpm build
+# Rodar API local
+pnpm --filter=api dev
 
-# Dev local (API, Web, etc)
-pnpm dev
-
-# Testes automatizados
+# Rodar testes
 pnpm --filter=api test
 
-# Formatador
+# Format code
 pnpm format
 ```
 
 ---
 
-## ☑️ Requisitos de Desenvolvimento
+## 📖 Monorepo
+
+- `apps/api`: API NestJS
+- `packages/zod`: Schemas e DTOs compartilhados
+- `packages/typescript-config`: Configurações tsconfig compartilhadas
+
+---
+
+## 🔧 Requisitos
+
 - Node 18+
 - PNPM
-- Docker (opcional para DB local)
-- Prisma CLI
-- Firebase CLI (notificações)
+- Docker (para banco local opcional)
+- PostgreSQL / Prisma CLI
+- Firebase CLI (para FCM)
 
 ---
 
-## 🔗 Links úteis
-- [Turborepo Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Zod](https://github.com/colinhacks/zod)
-- [Prisma](https://www.prisma.io/docs/)
-- [NestJS](https://docs.nestjs.com/)
+> Projeto em andamento com foco em escalabilidade, boas práticas e separação de responsabilidades. Sinta-se à vontade para contribuir!
 
----
-
-> Projeto em evolução constante! Contribuições e sugestões são bem-vindas. ✨

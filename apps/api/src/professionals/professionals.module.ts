@@ -6,11 +6,6 @@ import { ProfessionalsService } from './professionals.service';
 
 @Module({
   controllers: [ProfessionalsController],
-  providers: [
-    ProfessionalsService,
-    ProfessionalsService,
-    ProfessionalsRepository,
-    PrismaService,
-  ],
+  providers: [ProfessionalsService, ProfessionalsRepository, PrismaService],
 })
 export class ProfessionalsModule {}

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, Role } from '@prisma/client';
+import { UpdateUserDto } from '@organiza-isso-app/zod';
+import { Role } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 
@@ -39,10 +40,10 @@ export class UsersRepository {
     });
   }
 
-  async update(id: string, data: Prisma.UserUpdateInput) {
+  async update(id: string, data: UpdateUserDto) {
     return this.prisma.user.update({
       where: { id },
-      data,
+      data: { ...data, role: data.role ?? Role.CLIENT },
     });
   }
 

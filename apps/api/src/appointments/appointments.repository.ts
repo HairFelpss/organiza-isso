@@ -12,7 +12,7 @@ export class AppointmentsRepository {
       data: {
         clientId: userId,
         professionalId: data.professionalId,
-        scheduleId: data.scheduleId,
+        calendarBlockId: data.calendarBlockId,
         status: data.status ?? 'PENDING',
       },
     });
@@ -21,14 +21,28 @@ export class AppointmentsRepository {
   findAllByUser(userId: string) {
     return this.prisma.appointment.findMany({
       where: { clientId: userId },
-      include: { professional: true, schedule: true },
+      include: {
+        professional: true,
+        calendarBlock: {
+          include: {
+            calendar: true,
+          },
+        },
+      },
     });
   }
 
   findById(id: string) {
     return this.prisma.appointment.findUnique({
       where: { id },
-      include: { professional: true, schedule: true },
+      include: {
+        professional: true,
+        calendarBlock: {
+          include: {
+            calendar: true,
+          },
+        },
+      },
     });
   }
 

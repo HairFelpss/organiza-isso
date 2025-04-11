@@ -89,7 +89,7 @@ describe('ProfessionalsRepository', () => {
   it('should call prisma.schedule.findMany on findScheduleByProfessionalId', async () => {
     await repository.findScheduleByProfessionalId('456');
     expect(mockPrisma.schedule.findMany).toHaveBeenCalledWith({
-      where: { providerId: '456', isAvailable: true },
+      where: { professionalId: '456', isAvailable: true },
       orderBy: { dateTime: 'asc' },
     });
   });
@@ -98,7 +98,7 @@ describe('ProfessionalsRepository', () => {
     await repository.findRatingsByProfessionalId('789');
     expect(mockPrisma.appointment.findMany).toHaveBeenCalledWith({
       where: {
-        providerId: '789',
+        professionalId: '789',
         status: 'CONFIRMED',
         NOT: { rating: null },
       },

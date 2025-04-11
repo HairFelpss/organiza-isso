@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { checkDatabaseDataConflict } from '../common/helpers/check-database-data-conflict';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersRepository } from './users.repository';
@@ -10,19 +11,20 @@ export class UsersService {
   async create(data: CreateUserDto) {
     const { email, document, phone } = data;
 
-    if (await this.usersRepository.findByDocument(document)) {
-      throw new NotFoundException(`Usuário com CPF ${document} já cadastrado`);
-    }
-
-    if (await this.usersRepository.findByEmail(email)) {
-      throw new NotFoundException(`Usuário com email ${email} já cadastrado`);
-    }
-
-    if (await this.usersRepository.findByPhone(phone)) {
-      throw new NotFoundException(
-        `Usuário com telefone ${phone} já cadastrado`,
-      );
-    }
+    await checkDatabaseDataConflict([
+      {
+        check: this.usersRepository.findByDocument(document),
+        message: 'CPF já cadastrado',
+      },
+      {
+        check: this.usersRepository.findByEmail(email),
+        message: 'Email já cadastrado',
+      },
+      {
+        check: this.usersRepository.findByPhone(phone),
+        message: 'Telefone já cadastrado',
+      },
+    ]);
 
     return this.usersRepository.create(data);
   }
@@ -39,6 +41,18 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  findByEmail(email: string) {
+    return this.usersRepository.findByEmail(email);
+  }
+
+  findByDocument(document: string) {
+    return this.usersRepository.findByDocument(document);
+  }
+
+  findByPhone(phone: string) {
+    return this.usersRepository.findByPhone(phone);
   }
 
   async update(id: string, data: UpdateUserDto) {
