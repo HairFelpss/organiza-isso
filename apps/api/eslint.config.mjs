@@ -33,6 +33,12 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off', // opcional
       '@typescript-eslint/no-unsafe-member-access': 'off', // opcional
+      '@typescript-eslint/no-unused-vars': ['error', { 
+        'argsIgnorePattern': '^_',
+        'varsIgnorePattern': '^_',
+        'destructuredArrayIgnorePattern': '^_',
+        'ignoreRestSiblings': true // Esta é a configuração chave para o seu caso
+      }],
     },
   },
 );

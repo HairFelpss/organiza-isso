@@ -1,43 +1,69 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { checkDatabaseDataConflict } from '../common/helpers/check-database-data-conflict';
+import { I18nService } from '../i18n/i18n.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { FilterUserDto } from './dto/filter-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    private readonly usersRepository: UsersRepository,
+    private readonly i18nService: I18nService,
+  ) {}
 
   async create(data: CreateUserDto) {
     const { email, document, phone } = data;
 
     await checkDatabaseDataConflict([
       {
-        check: this.usersRepository.findByDocument(document),
-        message: 'CPF já cadastrado',
+        check: this.findByDocument(document),
+        message: this.i18nService.t('users.errors.documentAlreadyExists'),
       },
       {
-        check: this.usersRepository.findByEmail(email),
-        message: 'Email já cadastrado',
+        check: this.findByEmail(email),
+        message: this.i18nService.t('users.errors.emailAlreadyExists'),
       },
       {
-        check: this.usersRepository.findByPhone(phone),
-        message: 'Telefone já cadastrado',
+        check: this.findByPhone(phone),
+        message: this.i18nService.t('users.errors.phoneAlreadyExists'),
       },
     ]);
 
-    return this.usersRepository.create(data);
+    const user = await this.usersRepository.create(data);
+
+    return {
+      message: this.i18nService.t('users.success.created'),
+      user,
+    };
   }
 
-  async findAll() {
-    return this.usersRepository.findAll();
+  async findAll(params: FilterUserDto) {
+    const { users, metadata } = await this.usersRepository.findAll(params);
+
+    if (!users.length) {
+      return {
+        message: this.i18nService.t('users.info.noUsersFound'),
+        users: [],
+        metadata,
+      };
+    }
+
+    return {
+      message: this.i18nService.t('users.success.listed'),
+      users,
+      metadata,
+    };
   }
 
-  async findOne(id: string) {
+  async findById(id: string) {
     const user = await this.usersRepository.findById(id);
 
     if (!user) {
-      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
+      throw new NotFoundException(
+        this.i18nService.t('users.errors.notFound', { id }),
+      );
     }
 
     return user;
@@ -56,27 +82,55 @@ export class UsersService {
   }
 
   async update(id: string, data: UpdateUserDto) {
-    console.log('id -> ', id);
-    console.log('data -> ', data);
-
     const user = await this.usersRepository.findById(id);
 
     if (!user) {
-      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
+      throw new NotFoundException(
+        this.i18nService.t('users.errors.notFound', { id }),
+      );
     }
 
-    return this.usersRepository.update(id, data);
+    // Verifica se o email está sendo atualizado e se já existe
+    if (data.email && data.email !== user.email) {
+      const existingEmail = await this.findByEmail(data.email);
+      if (existingEmail) {
+        throw new NotFoundException(
+          this.i18nService.t('users.errors.emailAlreadyExists'),
+        );
+      }
+    }
+
+    // Verifica se o telefone está sendo atualizado e se já existe
+    if (data.phone && data.phone !== user.phone) {
+      if (await this.findByPhone(data.phone)) {
+        throw new NotFoundException(
+          this.i18nService.t('users.errors.phoneAlreadyExists'),
+        );
+      }
+    }
+
+    const updatedUser = await this.usersRepository.update(id, data);
+
+    return {
+      message: this.i18nService.t('users.success.updated'),
+      user: updatedUser,
+    };
   }
 
   async remove(id: string) {
     const user = await this.usersRepository.findById(id);
 
     if (!user) {
-      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
+      throw new NotFoundException(
+        this.i18nService.t('users.errors.notFound', { id }),
+      );
     }
 
     await this.usersRepository.delete(id);
 
-    return { message: 'Usuário removido com sucesso', id };
+    return {
+      message: this.i18nService.t('users.success.deleted'),
+      id,
+    };
   }
 }

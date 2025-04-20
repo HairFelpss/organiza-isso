@@ -78,14 +78,14 @@ describe('UsersService', () => {
       const mockUser = { id: 'uuid', name: 'User' };
       mockRepo.findById.mockResolvedValue(mockUser);
 
-      const result = await service.findOne('uuid');
+      const result = await service.findById('uuid');
       expect(result).toEqual(mockUser);
     });
 
     it('should throw if user not found', async () => {
       mockRepo.findById.mockResolvedValue(null);
 
-      await expect(service.findOne('uuid')).rejects.toThrow(NotFoundException);
+      await expect(service.findById('uuid')).rejects.toThrow(NotFoundException);
     });
   });
 

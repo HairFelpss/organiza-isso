@@ -1,0 +1,33 @@
+{
+  "auth": {
+    "errors": {
+      "userNotFound": "Usuário não encontrado",
+      "invalidPassword": "Senha inválida",
+      "emailAlreadyExists": "Email já cadastrado",
+      "documentAlreadyExists": "CPF já cadastrado",
+      "phoneAlreadyExists": "Telefone já cadastrado",
+      "invalidToken": "Token inválido",
+      "expiredToken": "Token expirado",
+      "refreshTokenNotFound": "Refresh token não encontrado",
+      "invalidRefreshToken": "Refresh token inválido"
+    },
+    "success": {
+      "login": "Login realizado com sucesso",
+      "logout": "Logout realizado com sucesso",
+      "register": "Cadastro realizado com sucesso"
+    }
+  },
+  "users": {
+    "errors": {
+      "notFound": "Usuário com ID {{id}} não encontrado",
+      "createFailed": "Erro ao criar usuário",
+      "updateFailed": "Erro ao atualizar usuário",
+      "deleteFailed": "Erro ao remover usuário"
+    },
+    "success": {
+      "created": "Usuário criado com sucesso",
+      "updated": "Usuário atualizado com sucesso",
+      "deleted": "Usuário removido com sucesso"
+    }
+  }
+}

@@ -7,7 +7,7 @@
     "declaration": true,       // gera arquivos .d.ts
     "incremental": true,      // gera arquivos .d.ts incrementais
     "declarationMap": true,    // gera mapas dos arquivos .d.ts
-    "emitDeclarationOnly": true // evita gerar .js se quiser só os tipos (opcional)
+    "emitDeclarationOnly": false // evita gerar .js se quiser só os tipos (opcional)
   },
   "include": ["*.ts"],
   "exclude": ["dist", "node_modules"]

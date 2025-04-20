@@ -12,7 +12,16 @@ async function bootstrap() {
     .setTitle('Organiza Isso API')
     .setDescription('Documentação Swagger API Organiza Isso')
     .setVersion('1.0')
-    .addBearerAuth()
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'Authorization',
+        in: 'header',
+      },
+      'bearer', // 👈 nome da security definition
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

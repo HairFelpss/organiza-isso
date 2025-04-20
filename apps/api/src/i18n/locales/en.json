@@ -1,0 +1,33 @@
+{
+  "auth": {
+    "errors": {
+      "userNotFound": "User not found",
+      "invalidPassword": "Invalid password",
+      "emailAlreadyExists": "Email already registered",
+      "documentAlreadyExists": "Document already registered",
+      "phoneAlreadyExists": "Phone already registered",
+      "invalidToken": "Invalid token",
+      "expiredToken": "Token expired",
+      "refreshTokenNotFound": "Refresh token not found",
+      "invalidRefreshToken": "Invalid refresh token"
+    },
+    "success": {
+      "login": "Login successful",
+      "logout": "Logout successful",
+      "register": "Registration successful"
+    }
+  },
+  "users": {
+    "errors": {
+      "notFound": "User with ID {{id}} not found",
+      "createFailed": "Failed to create user",
+      "updateFailed": "Failed to update user",
+      "deleteFailed": "Failed to delete user"
+    },
+    "success": {
+      "created": "User created successfully",
+      "updated": "User updated successfully",
+      "deleted": "User deleted successfully"
+    }
+  }
+}

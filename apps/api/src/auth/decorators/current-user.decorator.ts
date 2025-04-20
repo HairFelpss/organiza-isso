@@ -2,7 +2,7 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { Role } from '@prisma/client';
 
-interface AuthenticatedUser {
+export interface AuthenticatedUser {
   id: string;
   email: string;
   role: Role;
