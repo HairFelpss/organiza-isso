@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
@@ -16,6 +17,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
+import { AppointmentsQueryDto } from './schemas/appointments-query.schema';
 
 @ApiTags('Appointments')
 @Controller('appointments')
@@ -30,8 +32,11 @@ export class AppointmentsController {
   }
 
   @Get()
-  findAll(@CurrentUser('id') userId: string) {
-    return this.appointmentsService.findAllByUser(userId);
+  findAll(
+    @CurrentUser('id') userId: string,
+    @Query() query: AppointmentsQueryDto,
+  ) {
+    return this.appointmentsService.findAllAppointmentsByUserId(userId, query);
   }
 
   @Get(':id')

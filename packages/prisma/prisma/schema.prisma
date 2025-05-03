@@ -7,6 +7,44 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  CLIENT
+  PROFESSIONAL
+  ADMIN
+}
+
+enum Plan {
+  FREE
+  PRO
+  PREMIUM
+}
+
+enum NotificationType {
+  EMAIL
+  PUSH
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELED
+}
+
+enum CalendarType {
+  USER
+  PROFESSIONAL
+  FACILITY
+  COMPANY
+}
+
+enum CalendarEventType {
+  APPOINTMENT // Evento de agendamento
+  BLOCK // Bloqueio genérico (ex: manutenção, indisponibilidade)
+  VACATION // Férias
+  BREAK // Intervalo
+  CUSTOM // Outro tipo personalizado
+}
+
 model User {
   id            String         @id @default(uuid())
   email         String         @unique
@@ -20,7 +58,7 @@ model User {
   professional  Professional?
   appointments  Appointment[]  @relation("ClientAppointments")
   notifications Notification[]
-  calendars     Calendar[]
+  calendars     Calendar[]     @relation("UserCalendars")
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 }
@@ -39,11 +77,13 @@ model Professional {
   user                 User                    @relation(fields: [userId], references: [id])
   companyId            String?
   company              Company?                @relation(fields: [companyId], references: [id])
+  facilityId           String?
+  facility             Facility?               @relation(fields: [facilityId], references: [id])
+  calendars            Calendar[]              @relation("ProfessionalCalendars")
   appointments         Appointment[]           @relation("ProfessionalAppointments")
   assignedAppointments AppointmentAssignment[]
   createdAt            DateTime                @default(now())
   updatedAt            DateTime                @updatedAt
-  Calendar             Calendar[]
 }
 
 model Company {
@@ -51,9 +91,11 @@ model Company {
   name           String
   description    String?
   ownerId        String
+  type           String? // Ex: "service-based", "facility-based"
+  settings       Json?
   professionals  Professional[]
   establishments Establishment[]
-  calendars      Calendar[]
+  calendars      Calendar[]      @relation("CompanyCalendars")
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
 }
@@ -65,6 +107,7 @@ model Establishment {
   phone      String?
   openTime   String
   closeTime  String
+  settings   Json?
   companyId  String
   company    Company    @relation(fields: [companyId], references: [id])
   facilities Facility[]
@@ -73,58 +116,72 @@ model Establishment {
 }
 
 model Facility {
-  id              String        @id @default(uuid())
+  id              String         @id @default(uuid())
   name            String
+  description     String?
+  capacity        Int?
+  settings        Json?
   establishmentId String
-  establishment   Establishment @relation(fields: [establishmentId], references: [id])
-  calendars       Calendar[]
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  establishment   Establishment  @relation(fields: [establishmentId], references: [id])
+  calendars       Calendar[]     @relation("FacilityCalendars")
+  professionals   Professional[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 }
 
 model Calendar {
-  id             String          @id @default(uuid())
-  userId         String?
-  professionalId String?
-  companyId      String?
-  facilityId     String?
-  blocks         CalendarBlock[]
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  id             String       @id @default(uuid())
+  name           String
+  type           CalendarType
+  description    String?
+  isPublic       Boolean      @default(false)
+  settings       Json?
+  // Relações polimórficas
+  userId         String? // Se for calendário de usuário
+  professionalId String? // Se for calendário de profissional
+  facilityId     String? // Se for calendário de facility
+  companyId      String? // Se for calendário de company
 
-  user         User?         @relation(fields: [userId], references: [id])
-  professional Professional? @relation(fields: [professionalId], references: [id])
-  company      Company?      @relation(fields: [companyId], references: [id])
-  facility     Facility?     @relation(fields: [facilityId], references: [id])
+  user         User?           @relation("UserCalendars", fields: [userId], references: [id])
+  professional Professional?   @relation("ProfessionalCalendars", fields: [professionalId], references: [id])
+  facility     Facility?       @relation("FacilityCalendars", fields: [facilityId], references: [id])
+  company      Company?        @relation("CompanyCalendars", fields: [companyId], references: [id])
+  events       CalendarEvent[]
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
 }
 
-model CalendarBlock {
-  id          String       @id @default(uuid())
+model CalendarEvent {
+  id          String            @id @default(uuid())
   calendarId  String
-  dateTime    DateTime
-  duration    Int
-  isAvailable Boolean      @default(true)
-  reason      String? // ✅ Motivo do bloqueio
-  appointment Appointment?
+  startTime   DateTime
+  endTime     DateTime
+  eventType   CalendarEventType
+  title       String?
+  description String?
+  isAvailable Boolean           @default(true)
+  metadata    Json?
+  appointment Appointment? // Só se for um evento de agendamento
 
-  calendar Calendar @relation(fields: [calendarId], references: [id])
+  calendar  Calendar @relation(fields: [calendarId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Appointment {
-  id              String            @id @default(uuid())
-  professionalId  String
-  clientId        String
-  calendarBlockId String            @unique
-  status          AppointmentStatus @default(PENDING)
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @default(now())
-
-  professional  Professional  @relation(fields: [professionalId], references: [id], name: "ProfessionalAppointments")
-  client        User          @relation(fields: [clientId], references: [id], name: "ClientAppointments")
-  calendarBlock CalendarBlock @relation(fields: [calendarBlockId], references: [id])
-  rating        Rating?
-
+  id                    String                  @id @default(uuid())
+  professionalId        String
+  clientId              String
+  calendarEventId       String                  @unique
+  status                AppointmentStatus       @default(PENDING)
+  metadata              Json?
+  professional          Professional            @relation(fields: [professionalId], references: [id], name: "ProfessionalAppointments")
+  client                User                    @relation(fields: [clientId], references: [id], name: "ClientAppointments")
+  calendarEvent         CalendarEvent           @relation(fields: [calendarEventId], references: [id])
   assignedProfessionals AppointmentAssignment[]
+  rating                Rating?
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @default(now())
 }
 
 model AppointmentAssignment {
@@ -157,27 +214,4 @@ model Rating {
   createdAt     DateTime @default(now())
 
   appointment Appointment @relation(fields: [appointmentId], references: [id])
-}
-
-enum Role {
-  CLIENT
-  PROFESSIONAL
-  ADMIN
-}
-
-enum Plan {
-  FREE
-  PRO
-  PREMIUM
-}
-
-enum NotificationType {
-  EMAIL
-  PUSH
-}
-
-enum AppointmentStatus {
-  PENDING
-  CONFIRMED
-  CANCELED
 }

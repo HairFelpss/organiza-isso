@@ -1,20 +1,26 @@
 import {
   ConflictException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { AppointmentStatus, Plan } from '@prisma/client';
+import { AppointmentsService } from '../appointments/appointments.service';
+import { AppointmentsQueryDto } from '../appointments/schemas/appointments-query.schema';
 import { I18nService } from '../i18n/i18n.service';
 import { UsersService } from '../users/users.service';
 import { CreateProfessionalDto } from './dto/create-professional.dto';
 import { UpdateProfessionalDto } from './dto/update-professional.dto';
 import { ProfessionalsRepository } from './professionals.repository';
+import { ProfessionalsQueryDto } from './schemas/professionals-query.schema';
 
 @Injectable()
 export class ProfessionalsService {
   constructor(
     private readonly repository: ProfessionalsRepository,
     private readonly userService: UsersService,
+    @Inject(forwardRef(() => AppointmentsService))
+    private appointmentsService: AppointmentsService,
     private readonly i18nService: I18nService,
   ) {}
 
@@ -27,11 +33,11 @@ export class ProfessionalsService {
       );
     }
 
-    const existingProfessional = await this.repository.findByUserId(userId);
+    const existingProfessional = await this.repository.findByUserId(user.id);
 
     if (existingProfessional) {
       throw new ConflictException(
-        this.i18nService.t('professionals.errors.alreadyProfessional'),
+        this.i18nService.t('professionals.errors.alreadyExists'),
       );
     }
 
@@ -50,89 +56,48 @@ export class ProfessionalsService {
     return this.repository.create(data, userId);
   }
 
-  async findAll(params?: {
-    search?: string;
-    specialties?: string[];
-    isActive?: boolean;
-    companyId?: string;
-    subscriptionPlan?: Plan;
-    minRating?: number;
-    page?: number;
-    limit?: number;
-    orderBy?: string;
-    order?: 'asc' | 'desc';
-  }) {
+  async findAll(params?: ProfessionalsQueryDto) {
     return this.repository.findAll(params);
   }
 
-  async dashboard(professionalId: string) {
-    const professional = await this.repository.findWithUser(professionalId);
-    if (!professional) {
-      throw new NotFoundException(
-        this.i18nService.t('professionals.errors.notFound'),
-      );
-    }
+  async dashboard(professionalId: string, query?: AppointmentsQueryDto) {
+    const professional = await this.findById(professionalId);
 
-    const [appointmentsData, ratingsData, upcomingAppointments, stats] =
-      await Promise.all([
-        this.repository.findAppointmentsByProfessionalId(professionalId, {
-          limit: 5,
-        }),
-        this.repository.findRatingsByProfessionalId(professionalId, {
-          limit: 3,
-        }),
-        this.repository.findUpcomingAppointments(professionalId, {
-          status: 'CONFIRMED',
-          limit: 5,
-        }),
-        this.repository.getProfessionalStats(professionalId),
-      ]);
+    // const [appointmentsData, ratingsData, upcomingAppointments, stats] =
+    const [appointmentsData, stats] = await Promise.all([
+      this.appointmentsService.findAllAppointmentsByProfessional(
+        professionalId,
+        query,
+      ),
+      // this.repository.findRatingsByProfessionalId(professionalId, {
+      //   limit: 3,
+      // }),
+      // this.appointmentsService.findUpcomingAppointments(professionalId, {
+      //   status: 'CONFIRMED',
+      //   limit: 5,
+      // }),
+      this.repository.getProfessionalStats(professionalId),
+    ]);
 
     return {
       profile: professional,
       stats,
-      upcomingAppointments,
+      //upcomingAppointments,
       recentAppointments: appointmentsData.appointments,
-      recentRatings: ratingsData.ratings,
+      //recentRatings: ratingsData.ratings,
     };
   }
 
-  async findOne(id: string) {
+  async findById(id: string) {
     const professional = await this.repository.findById(id);
+
     if (!professional) {
       throw new NotFoundException(
         this.i18nService.t('professionals.errors.notFound'),
       );
     }
+
     return professional;
-  }
-
-  async getPrivateProfile(id: string) {
-    const professional = await this.repository.findWithDetails(id);
-    if (!professional) {
-      throw new NotFoundException(
-        this.i18nService.t('professionals.errors.notFound'),
-      );
-    }
-    return professional;
-  }
-
-  async getSchedule(
-    id: string,
-    params?: {
-      startDate?: Date;
-      endDate?: Date;
-      isAvailable?: boolean;
-    },
-  ) {
-    const professional = await this.repository.findById(id);
-    if (!professional) {
-      throw new NotFoundException(
-        this.i18nService.t('professionals.errors.notFound'),
-      );
-    }
-
-    return this.repository.findSchedule(id, params);
   }
 
   async getRatings(
@@ -146,23 +111,13 @@ export class ProfessionalsService {
       order?: 'asc' | 'desc';
     },
   ) {
-    const professional = await this.repository.findById(id);
-    if (!professional) {
-      throw new NotFoundException(
-        this.i18nService.t('professionals.errors.notFound'),
-      );
-    }
+    const professional = await this.findById(id);
 
-    return this.repository.findRatings(id, params);
+    return this.repository.findRatings(professional.id, params);
   }
 
   async update(id: string, dto: UpdateProfessionalDto) {
-    const professional = await this.repository.findById(id);
-    if (!professional) {
-      throw new NotFoundException(
-        this.i18nService.t('professionals.errors.notFound'),
-      );
-    }
+    const professional = await this.findById(id);
 
     if (dto.companyId) {
       const company = await this.repository.findCompanyById(dto.companyId);
@@ -173,87 +128,15 @@ export class ProfessionalsService {
       }
     }
 
-    return this.repository.update(id, dto);
+    return this.repository.update(professional.id, dto);
   }
 
   async remove(id: string) {
-    const professional = await this.repository.findById(id);
-    if (!professional) {
-      throw new NotFoundException(
-        this.i18nService.t('professionals.errors.notFound'),
-      );
-    }
+    const professional = await this.findById(id);
 
     // Atualiza o role do usuário de volta para CLIENT
     await this.userService.update(professional.userId, { role: 'CLIENT' });
 
     return this.repository.delete(id);
-  }
-
-  // Métodos adicionais para gerenciamento de calendário
-  async createCalendar(professionalId: string) {
-    const professional = await this.repository.findById(professionalId);
-    if (!professional) {
-      throw new NotFoundException(
-        this.i18nService.t('professionals.errors.notFound'),
-      );
-    }
-
-    return this.repository.createCalendar(professionalId);
-  }
-
-  async addCalendarBlock(
-    professionalId: string,
-    data: {
-      dateTime: Date;
-      duration: number;
-      isAvailable: boolean;
-      reason?: string;
-    },
-  ) {
-    const professional = await this.repository.findById(professionalId);
-    if (!professional) {
-      throw new NotFoundException(
-        this.i18nService.t('professionals.errors.notFound'),
-      );
-    }
-
-    return this.repository.addCalendarBlock(professionalId, data);
-  }
-
-  // Métodos para gerenciamento de agendamentos
-  async getAppointments(
-    professionalId: string,
-    params?: {
-      status?: AppointmentStatus;
-      startDate?: Date;
-      endDate?: Date;
-      page?: number;
-      limit?: number;
-    },
-  ) {
-    const professional = await this.repository.findById(professionalId);
-    if (!professional) {
-      throw new NotFoundException(
-        this.i18nService.t('professionals.errors.notFound'),
-      );
-    }
-
-    return this.repository.findAppointments(professionalId, params);
-  }
-
-  async updateAppointmentStatus(
-    professionalId: string,
-    appointmentId: string,
-    status: AppointmentStatus,
-  ) {
-    const professional = await this.repository.findById(professionalId);
-    if (!professional) {
-      throw new NotFoundException(
-        this.i18nService.t('professionals.errors.notFound'),
-      );
-    }
-
-    return this.repository.updateAppointmentStatus(appointmentId, status);
   }
 }

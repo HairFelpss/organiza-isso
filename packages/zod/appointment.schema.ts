@@ -18,7 +18,7 @@ export type Appointment = z.infer<typeof AppointmentSchema>;
 export const CreateAppointmentSchema = z.object({
   professionalId: z.string().uuid(),
   scheduleId: z.string().uuid(),
-  calendarBlockId: z.string().uuid(),
+  calendarEventId: z.string().uuid(),
   status: AppointmentStatusSchema.optional(),
 });
 

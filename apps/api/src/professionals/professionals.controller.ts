@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
@@ -18,12 +19,14 @@ import {
 } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 import { ZodValidationPipe } from 'nestjs-zod';
+import { AppointmentsQueryDto } from '../appointments/schemas/appointments-query.schema';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { RoleGuard } from '../auth/decorators/role.decorator';
 import { RolesGuard } from '../auth/guards/role.guard';
 import { CreateProfessionalDto } from './dto/create-professional.dto';
 import { UpdateProfessionalDto } from './dto/update-professional.dto';
 import { ProfessionalsService } from './professionals.service';
+import { ProfessionalsQueryDto } from './schemas/professionals-query.schema';
 
 @ApiTags('Professionals')
 @ApiBearerAuth()
@@ -94,8 +97,11 @@ export class ProfessionalsController {
   })
   @UseGuards(RolesGuard)
   @RoleGuard(Role.PROFESSIONAL)
-  getProfessionalDashboard(@CurrentUser() user: { id: string }) {
-    return this.professionalsService.dashboard(user.id);
+  getProfessionalDashboard(
+    @CurrentUser() user: { id: string },
+    @Query() query: AppointmentsQueryDto,
+  ) {
+    return this.professionalsService.dashboard(user.id, query);
   }
 
   @Get()
@@ -131,8 +137,8 @@ export class ProfessionalsController {
       },
     },
   })
-  findAll() {
-    return this.professionalsService.findAll();
+  findAll(@Query() query: ProfessionalsQueryDto) {
+    return this.professionalsService.findAll(query);
   }
 
   @Get(':id')
@@ -178,73 +184,7 @@ export class ProfessionalsController {
     },
   })
   findOne(@Param('id') id: string) {
-    return this.professionalsService.findOne(id);
-  }
-
-  @Get(':id/profile')
-  @ApiOperation({
-    summary: 'Get private professional profile (only for professionals)',
-  })
-  @ApiParam({
-    name: 'id',
-    type: 'string',
-    format: 'uuid',
-    description: 'Professional ID',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Private professional profile',
-    schema: {
-      example: {
-        professional: {
-          id: 'uuid',
-          userId: 'uuid',
-          businessName: 'Clínica Exemplo',
-          specialties: ['Psicologia'],
-          profileDescription: 'Atendimento humanizado',
-          subscriptionPlan: 'FREE',
-          isActive: true,
-          companyId: null,
-          averageRating: 0,
-          totalRatings: 0,
-          totalAppointments: 0,
-          createdAt: '2023-01-01T00:00:00.000Z',
-          updatedAt: '2023-01-01T00:00:00.000Z',
-          // dados privados adicionais
-        },
-      },
-    },
-  })
-  @UseGuards(RolesGuard)
-  @RoleGuard(Role.PROFESSIONAL)
-  getPrivateProfile(@Param('id') id: string) {
-    return this.professionalsService.getPrivateProfile(id);
-  }
-
-  @Get(':id/schedule')
-  @ApiOperation({ summary: 'Get professional schedule by ID' })
-  @ApiParam({
-    name: 'id',
-    type: 'string',
-    format: 'uuid',
-    description: 'Professional ID',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Professional schedule',
-    schema: {
-      example: {
-        schedule: [
-          {
-            date: '2023-01-01T09:00:00.000Z',
-            available: true,
-          },
-        ],
-      },
-    },
-  })
-  getSchedule(@Param('id') id: string) {
-    return this.professionalsService.getSchedule(id);
+    return this.professionalsService.findById(id);
   }
 
   @Get(':id/ratings')

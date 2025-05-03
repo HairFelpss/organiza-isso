@@ -62,13 +62,13 @@ describe('ProfessionalsService', () => {
 
   it('should find one by id', async () => {
     mockRepo.findById.mockResolvedValue({ id: '1' });
-    const result = await service.findOne('1');
+    const result = await service.findById('1');
     expect(result).toEqual({ id: '1' });
   });
 
   it('should throw if professional not found (findOne)', async () => {
     mockRepo.findById.mockResolvedValue(null);
-    await expect(service.findOne('2')).rejects.toThrow(NotFoundException);
+    await expect(service.findById('2')).rejects.toThrow(NotFoundException);
   });
 
   it('should return private profile', async () => {

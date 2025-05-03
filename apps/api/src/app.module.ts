@@ -4,6 +4,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppointmentsModule } from './appointments/appointments.module';
 import { AuthModule } from './auth/auth.module';
+
+import { CalendarEventsModule } from './calendar-events/calendar-events.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { PrismaService } from './prisma/prisma.service';
 import { ProfessionalsModule } from './professionals/professionals.module';
@@ -19,6 +21,7 @@ import { UsersModule } from './users/users.module';
     ProfessionalsModule,
     AppointmentsModule,
     NotificationsModule,
+    CalendarEventsModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
