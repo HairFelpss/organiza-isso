@@ -10,7 +10,9 @@
     "check-types": "turbo run check-types",
     "prisma:generate": "prisma generate --schema=./packages/prisma/prisma/schema.prisma",
     "prisma:migrate": "prisma migrate dev --schema=./packages/prisma/prisma/schema.prisma",
-    "prisma:studio": "prisma studio --schema=./packages/prisma/prisma/schema.prisma"
+    "prisma:studio": "prisma studio --schema=./packages/prisma/prisma/schema.prisma",
+    "prepare": "husky install",
+    "commit": "cz"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
@@ -18,10 +20,30 @@
     "prettier": "^3.5.3",
     "ts-jest": "^29.3.0",
     "turbo": "^2.4.4",
-    "typescript": "5.8.2"
+    "typescript": "5.8.2",
+    "commitizen": "^4.3.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^9.0.11",
+    "@commitlint/cli": "^19.3.0",
+    "@commitlint/config-conventional": "^19.3.0",
+    "lint-staged": "^15.2.0"
   },
   "packageManager": "pnpm@9.0.0",
   "engines": {
     "node": ">=18"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "turbo run lint --filter=..."
+    ],
+    "*.{json,md}": [
+      "prettier --write",
+      "git add"
+    ]
   }
 }
