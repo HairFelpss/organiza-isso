@@ -13,7 +13,7 @@
     "prisma:studio": "prisma studio --schema=./packages/prisma/prisma/schema.prisma",
     "prepare": "husky install",
     "commit": "cz",
-    "auto-commit": "./auto-commit.sh"
+    "auto-commit": "node auto-commit.js"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
