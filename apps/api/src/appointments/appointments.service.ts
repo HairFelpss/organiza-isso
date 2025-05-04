@@ -232,7 +232,11 @@ export class AppointmentsService {
     // Liberar o evento de calendário
     await this.calendarEventsService.update(appointment.calendarEventId, {
       isAvailable: true,
-      appointment: null,
+      metadata: {
+        lastAppointmentId: appointment.id,
+        lastAppointmentStatus: appointment.status,
+        clearedAt: new Date().toISOString(),
+      },
     });
 
     return this.repository.delete(id);

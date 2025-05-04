@@ -8,6 +8,7 @@ export const AppointmentSchema = z.object({
   professionalId: z.string().uuid(),
   clientId: z.string().uuid(),
   scheduleId: z.string().uuid(),
+  calendarEventId: z.string().uuid(),
   status: AppointmentStatusSchema,
   createdAt: z.date(),
   updatedAt: z.date(),

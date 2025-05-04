@@ -10,6 +10,9 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { PrismaService } from './prisma/prisma.service';
 import { ProfessionalsModule } from './professionals/professionals.module';
 import { UsersModule } from './users/users.module';
+import { CompaniesModule } from './companies/companies.module';
+import { FacilitiesModule } from './facilities/facilities.module';
+import { EstablishmentsModule } from './establishments/establishments.module';
 
 @Module({
   imports: [
@@ -22,6 +25,9 @@ import { UsersModule } from './users/users.module';
     AppointmentsModule,
     NotificationsModule,
     CalendarEventsModule,
+    CompaniesModule,
+    FacilitiesModule,
+    EstablishmentsModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
