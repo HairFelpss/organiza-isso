@@ -12,7 +12,8 @@
     "prisma:migrate": "prisma migrate dev --schema=./packages/prisma/prisma/schema.prisma",
     "prisma:studio": "prisma studio --schema=./packages/prisma/prisma/schema.prisma",
     "prepare": "husky install",
-    "commit": "cz"
+    "commit": "cz",
+    "auto-commit": "./auto-commit.sh"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
