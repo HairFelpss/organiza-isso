@@ -1,6 +1,10 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-export const AppointmentStatusSchema = z.enum(['PENDING', 'CONFIRMED', 'CANCELED']);
+export const AppointmentStatusSchema = z.enum([
+  "PENDING",
+  "CONFIRMED",
+  "CANCELED",
+]);
 export type AppointmentStatus = z.infer<typeof AppointmentStatusSchema>;
 
 export const AppointmentSchema = z.object({
@@ -36,4 +40,6 @@ export const UpdateAppointmentStatusSchema = z.object({
   status: AppointmentStatusSchema,
 });
 
-export type UpdateAppointmentStatusDto = z.infer<typeof UpdateAppointmentStatusSchema>;
+export type UpdateAppointmentStatusDto = z.infer<
+  typeof UpdateAppointmentStatusSchema
+>;

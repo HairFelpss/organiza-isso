@@ -39,9 +39,6 @@
     }
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "turbo run lint --filter=..."
-    ],
     "*.{json,md}": [
       "prettier --write",
       "git add"

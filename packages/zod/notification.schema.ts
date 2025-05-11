@@ -1,7 +1,7 @@
 // zod/notification.schema.ts
-import { z } from 'zod';
+import { z } from "zod";
 
-export const NotificationTypeSchema = z.enum(['EMAIL', 'PUSH']);
+export const NotificationTypeSchema = z.enum(["EMAIL", "PUSH"]);
 
 export const NotificationSchema = z.object({
   userId: z.string().uuid(),

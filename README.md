@@ -10,6 +10,7 @@ Organiza Isso é uma aplicação fullstack moderna para agendamento de serviços
 - **Deploy:** AWS Amplify ou Vercel
 
 **Funcionalidades:**
+
 - Página pública com horários de prestadores
 - Painel de gerenciamento (agenda e reservas)
 - Autenticação via JWT (Cognito/Keycloak)
@@ -19,6 +20,7 @@ Organiza Isso é uma aplicação fullstack moderna para agendamento de serviços
 - **Framework:** React Native (Expo opcional)
 
 **Funcionalidades:**
+
 - Agendamento rápido e intuitivo
 - Visualização de agenda e horários
 - Notificações push (FCM)
@@ -189,4 +191,3 @@ pnpm format
 ---
 
 > Projeto em andamento com foco em escalabilidade, boas práticas e separação de responsabilidades. Sinta-se à vontade para contribuir!
-
