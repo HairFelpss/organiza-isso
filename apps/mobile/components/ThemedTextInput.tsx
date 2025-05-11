@@ -1,13 +1,7 @@
-```tsx
-import { forwardRef } from "react";
-import {
-  StyleSheet,
-  TextInput,
-  TextInputProps,
-  View,
-} from "react-native";
-import { ThemedText } from "./ThemedText";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { forwardRef } from "react";
+import { StyleSheet, TextInput, TextInputProps, View } from "react-native";
+import { ThemedText } from "./ThemedText";
 
 interface ThemedTextInputProps extends TextInputProps {
   label?: string;
@@ -22,9 +16,7 @@ export const ThemedTextInput = forwardRef<TextInput, ThemedTextInputProps>(
 
     return (
       <View style={styles.container}>
-        {label && (
-          <ThemedText style={styles.label}>{label}</ThemedText>
-        )}
+        {label && <ThemedText style={styles.label}>{label}</ThemedText>}
         <TextInput
           ref={ref}
           style={[
@@ -41,7 +33,7 @@ export const ThemedTextInput = forwardRef<TextInput, ThemedTextInputProps>(
         />
       </View>
     );
-  }
+  },
 );
 
 const styles = StyleSheet.create({
@@ -62,4 +54,3 @@ const styles = StyleSheet.create({
 });
 
 ThemedTextInput.displayName = "ThemedTextInput";
-```

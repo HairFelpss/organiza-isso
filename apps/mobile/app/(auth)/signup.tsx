@@ -1,7 +1,7 @@
 import { Colors } from "@/constants/Colors";
 import { useTheme } from "@/contexts/theme-context";
 import { Link, useRouter } from "expo-router";
-import { ArrowRight, Lock, Mail } from "lucide-react-native";
+import { ArrowRight, ChevronLeft, Lock, Mail, User } from "lucide-react-native";
 import React from "react";
 import {
   ScrollView,
@@ -12,15 +12,14 @@ import {
   View,
 } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
-
-export default function LoginScreen() {
+export default function SignupScreen() {
   const { actualTheme } = useTheme();
   const colors = Colors[actualTheme];
   const router = useRouter();
 
-  const handleLogin = () => {
+  const handleSignup = () => {
     // For MVP, we'll navigate directly without validation
-    router.replace("/(tabs)");
+    router.push("/(auth)/role-selection");
   };
 
   return (
@@ -31,15 +30,19 @@ export default function LoginScreen() {
       ]}
       keyboardShouldPersistTaps="handled"
     >
+      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <ChevronLeft size={24} color={colors.text} />
+      </TouchableOpacity>
+
       <Animated.View
         entering={FadeIn.duration(600).delay(100)}
         style={styles.header}
       >
         <Text style={[styles.title, { color: colors.text }]}>
-          Bem-vindo de volta
+          Criar uma conta
         </Text>
         <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-          Entre para acessar sua agenda e compromissos
+          Preencha os campos abaixo para se cadastrar
         </Text>
       </Animated.View>
 
@@ -47,6 +50,22 @@ export default function LoginScreen() {
         entering={FadeIn.duration(600).delay(200)}
         style={styles.form}
       >
+        <View style={styles.inputContainer}>
+          <User size={20} color={colors.icon} style={styles.inputIcon} />
+          <TextInput
+            placeholder="Nome completo"
+            placeholderTextColor={colors.inputPlaceholder}
+            style={[
+              styles.input,
+              {
+                backgroundColor: colors.input,
+                borderColor: colors.inputBorder,
+                color: colors.text,
+              },
+            ]}
+          />
+        </View>
+
         <View style={styles.inputContainer}>
           <Mail size={20} color={colors.icon} style={styles.inputIcon} />
           <TextInput
@@ -82,18 +101,29 @@ export default function LoginScreen() {
           />
         </View>
 
-        <TouchableOpacity>
-          <Text style={[styles.forgotPassword, { color: colors.primary }]}>
-            Esqueceu sua senha?
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.inputContainer}>
+          <Lock size={20} color={colors.icon} style={styles.inputIcon} />
+          <TextInput
+            placeholder="Confirmar senha"
+            placeholderTextColor={colors.inputPlaceholder}
+            style={[
+              styles.input,
+              {
+                backgroundColor: colors.input,
+                borderColor: colors.inputBorder,
+                color: colors.text,
+              },
+            ]}
+            secureTextEntry
+          />
+        </View>
 
         <TouchableOpacity
           style={[styles.button, { backgroundColor: colors.buttonPrimary }]}
-          onPress={handleLogin}
+          onPress={handleSignup}
         >
           <Text style={[styles.buttonText, { color: colors.buttonText }]}>
-            Entrar
+            Continuar
           </Text>
           <ArrowRight size={20} color={colors.buttonText} />
         </TouchableOpacity>
@@ -104,12 +134,12 @@ export default function LoginScreen() {
         style={styles.footer}
       >
         <Text style={[styles.footerText, { color: colors.textSecondary }]}>
-          Não tem uma conta?{" "}
+          Já tem uma conta?{" "}
         </Text>
-        <Link href="/(auth)/signup" asChild>
+        <Link href="/(auth)/login" asChild>
           <TouchableOpacity>
-            <Text style={[styles.signupLink, { color: colors.primary }]}>
-              Criar conta
+            <Text style={[styles.loginLink, { color: colors.primary }]}>
+              Entrar
             </Text>
           </TouchableOpacity>
         </Link>
@@ -122,7 +152,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
-    justifyContent: "center",
+  },
+  backButton: {
+    marginTop: 40,
+    marginBottom: 16,
   },
   header: {
     marginBottom: 32,
@@ -156,11 +189,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 48,
     fontSize: 16,
   },
-  forgotPassword: {
-    textAlign: "right",
-    marginBottom: 24,
-    fontSize: 14,
-  },
   button: {
     flexDirection: "row",
     height: 56,
@@ -168,6 +196,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
+    marginTop: 8,
   },
   buttonText: {
     fontSize: 16,
@@ -181,7 +210,7 @@ const styles = StyleSheet.create({
   footerText: {
     fontSize: 14,
   },
-  signupLink: {
+  loginLink: {
     fontSize: 14,
     fontWeight: "600",
   },

@@ -1,12 +1,12 @@
-export * from './colors';
-export * from './typography';
-export * from './spacing';
-export * from './radius';
+export * from "./colors";
+export * from "./radius";
+export * from "./spacing";
+export * from "./typography";
 
-import { Colors } from './colors';
-import { radius } from './radius';
-import { spacing } from './spacing';
-import { typography } from './typography';
+import { Colors } from "./colors";
+import { radius } from "./radius";
+import { spacing } from "./spacing";
+import { typography } from "./typography";
 
 export const theme = {
   colors: Colors,

@@ -1,10 +1,9 @@
-```tsx
-import { useState } from "react";
-import { StyleSheet, View } from "react-native";
-import { Link, router } from "expo-router";
-import { Button } from "@organiza-isso-app/ui/button";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedTextInput } from "@/components/ThemedTextInput";
+import { Button } from "@organiza-isso-app/ui/button";
+import { Link } from "expo-router";
+import { useState } from "react";
+import { StyleSheet, View } from "react-native";
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState("");
@@ -22,12 +21,12 @@ export default function ForgotPasswordScreen() {
           <ThemedText type="title" style={styles.title}>
             Check Your Email
           </ThemedText>
-          
+
           <ThemedText style={styles.message}>
-            We've sent password reset instructions to {email}
+            Weve sent password reset instructions to {email}
           </ThemedText>
 
-          <Link href="/auth/login" asChild>
+          <Link href="/(auth)/login" asChild>
             <Button variant="secondary" size="lg">
               Return to Login
             </Button>
@@ -45,7 +44,8 @@ export default function ForgotPasswordScreen() {
         </ThemedText>
 
         <ThemedText style={styles.message}>
-          Enter your email address and we'll send you instructions to reset your password.
+          Enter your email address and well send you instructions to reset your
+          password.
         </ThemedText>
 
         <View style={styles.form}>
@@ -62,7 +62,7 @@ export default function ForgotPasswordScreen() {
           </Button>
         </View>
 
-        <Link href="/auth/login" asChild>
+        <Link href="/(auth)/login" asChild>
           <ThemedText type="link" style={styles.backLink}>
             Back to Login
           </ThemedText>
@@ -98,4 +98,3 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
 });
-```

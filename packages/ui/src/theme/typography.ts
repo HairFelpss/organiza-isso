@@ -1,21 +1,21 @@
-import { Platform } from 'react-native';
+import { Platform } from "react-native";
 
 export const typography = {
   fonts: {
     sans: Platform.select({
-      web: 'var(--font-geist-sans)',
-      default: 'System',
+      web: "var(--font-geist-sans)",
+      default: "System",
     }),
     mono: Platform.select({
-      web: 'var(--font-geist-mono)',
-      default: 'SpaceMono',
+      web: "var(--font-geist-mono)",
+      default: "SpaceMono",
     }),
   },
   weights: {
-    regular: '400',
-    medium: '500',
-    semibold: '600',
-    bold: '700',
+    regular: "400",
+    medium: "500",
+    semibold: "600",
+    bold: "700",
   },
   sizes: {
     xs: 12,
@@ -23,10 +23,10 @@ export const typography = {
     base: 16,
     lg: 18,
     xl: 20,
-    '2xl': 24,
-    '3xl': 30,
-    '4xl': 36,
-    '5xl': 48,
+    "2xl": 24,
+    "3xl": 30,
+    "4xl": 36,
+    "5xl": 48,
   },
   lineHeights: {
     none: 1,

@@ -1,62 +1,42 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
+import { AuthProvider } from "@/contexts/auth-context";
+import { ThemeProvider, useTheme } from "@/contexts/theme-context";
 import { useFonts } from "expo-font";
-import { Slot, Stack, useRouter, useSegments } from "expo-router";
+import { Slot } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
 
-import { useColorScheme } from "@/hooks/useColorScheme";
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-function useProtectedRoute(isAuthenticated: boolean) {
-  const segments = useSegments();
-  const router = useRouter();
-
-  useEffect(() => {
-    const inAuthGroup = segments[0] === "(auth)";
-
-    if (!isAuthenticated && !inAuthGroup) {
-      // Redirect to the sign-in page.
-      router.replace("/auth/login");
-    } else if (isAuthenticated && inAuthGroup) {
-      // Redirect away from the sign-in page.
-      router.replace("/");
-    }
-  }, [isAuthenticated, segments]);
-}
-
-export default function RootLayout() {
-  const colorScheme = useColorScheme() ?? "light";
+// Create a separate component for the content that needs theme access
+function AppContent() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
-  // TODO: Replace with actual auth state
-  const isAuthenticated = false;
-
-  useProtectedRoute(isAuthenticated);
-
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
+    if (loaded) SplashScreen.hideAsync();
   }, [loaded]);
 
-  if (!loaded) {
-    return null;
-  }
+  if (!loaded) return null;
 
+  return <Slot />;
+}
+
+// Create a separate component for StatusBar
+function ThemedStatusBar() {
+  const { actualTheme } = useTheme();
+  return <StatusBar style={actualTheme === "dark" ? "light" : "dark"} />;
+}
+
+export default function RootLayout() {
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Slot />
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <AppContent />
+        <ThemedStatusBar />
+      </ThemeProvider>
+    </AuthProvider>
   );
 }

@@ -1,5 +1,11 @@
-import { Platform, Pressable, Text } from "react-native";
-import type { PressableProps, StyleProp, TextStyle, ViewStyle } from "react-native";
+import React from "react";
+import type {
+  PressableProps,
+  StyleProp,
+  TextStyle,
+  ViewStyle,
+} from "react-native";
+import { Pressable, Text } from "react-native";
 import { theme } from "./theme";
 
 export type ButtonVariant = "primary" | "secondary";
@@ -18,7 +24,7 @@ const getButtonStyles = (
   variant: ButtonVariant = "primary",
   size: ButtonSize = "md",
   disabled: boolean = false,
-  isHovered: boolean = false
+  isHovered: boolean = false,
 ): ViewStyle => {
   const baseStyle: ViewStyle = {
     borderRadius: theme.radius.full,
@@ -29,9 +35,18 @@ const getButtonStyles = (
 
   // Size styles
   const sizeStyles: Record<ButtonSize, ViewStyle> = {
-    sm: { paddingVertical: theme.spacing[2], paddingHorizontal: theme.spacing[4] },
-    md: { paddingVertical: theme.spacing[3], paddingHorizontal: theme.spacing[5] },
-    lg: { paddingVertical: theme.spacing[4], paddingHorizontal: theme.spacing[6] },
+    sm: {
+      paddingVertical: theme.spacing[2],
+      paddingHorizontal: theme.spacing[4],
+    },
+    md: {
+      paddingVertical: theme.spacing[3],
+      paddingHorizontal: theme.spacing[5],
+    },
+    lg: {
+      paddingVertical: theme.spacing[4],
+      paddingHorizontal: theme.spacing[6],
+    },
   };
 
   // Variant styles
@@ -57,7 +72,10 @@ const getButtonStyles = (
   };
 };
 
-const getTextStyles = (variant: ButtonVariant = "primary", size: ButtonSize = "md"): TextStyle => {
+const getTextStyles = (
+  variant: ButtonVariant = "primary",
+  size: ButtonSize = "md",
+): TextStyle => {
   const baseStyle: TextStyle = {
     fontFamily: theme.typography.fonts.sans,
     fontWeight: theme.typography.weights.medium,
@@ -97,11 +115,20 @@ export const Button = ({
   disabled = false,
   ...props
 }: ButtonProps) => {
+  const [isHovered, setIsHovered] = React.useState(false);
+
   return (
     <Pressable
       disabled={disabled}
-      style={({ pressed, hovered }) => [
-        getButtonStyles(variant, size, disabled, Platform.OS === "web" && hovered),
+      onHoverIn={() => setIsHovered(true)}
+      onHoverOut={() => setIsHovered(false)}
+      style={({ pressed }) => [
+        getButtonStyles(
+          variant,
+          size,
+          disabled,
+          isHovered,
+        ),
         pressed && { opacity: 0.8 },
         style,
       ]}
