@@ -29,6 +29,13 @@
     "@commitlint/config-conventional": "^19.3.0",
     "lint-staged": "^15.2.0"
   },
+  "pnpm": {
+    "overrides": {
+      "react": "19.0.0",
+      "react-dom": "19.0.0",
+      "react-native": "0.79.2"
+    }
+  },
   "packageManager": "pnpm@9.0.0",
   "engines": {
     "node": ">=18"
