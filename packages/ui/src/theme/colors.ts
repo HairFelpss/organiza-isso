@@ -32,6 +32,25 @@ export const Colors = {
     cardHover: '#F8F9FA' as ColorValue,
     toast: '#FFFFFF' as ColorValue,
     tooltip: '#11181C' as ColorValue,
+
+    // Icon colors
+    icon: '#687076' as ColorValue,
+    iconHover: '#11181C' as ColorValue,
+
+    // Input colors
+    input: '#FFFFFF' as ColorValue,
+    inputBorder: '#E6E8EB' as ColorValue,
+    inputPlaceholder: '#889096' as ColorValue,
+    inputFocus: '#0A7EA4' as ColorValue,
+
+    // Button colors
+    buttonPrimary: '#0A7EA4' as ColorValue,
+    buttonPrimaryHover: '#065C78' as ColorValue,
+    buttonSecondary: '#F8F9FA' as ColorValue,
+    buttonSecondaryHover: '#E6E8EB' as ColorValue,
+    buttonDisabled: '#E6E8EB' as ColorValue,
+    buttonText: '#FFFFFF' as ColorValue,
+    buttonTextSecondary: '#11181C' as ColorValue,
   },
   dark: {
     // Primary brand colors
@@ -64,6 +83,25 @@ export const Colors = {
     cardHover: '#202425' as ColorValue,
     toast: '#1A1D1E' as ColorValue,
     tooltip: '#ECEDEE' as ColorValue,
+
+    // Icon colors
+    icon: '#9BA1A6' as ColorValue,
+    iconHover: '#ECEDEE' as ColorValue,
+
+    // Input colors
+    input: '#1A1D1E' as ColorValue,
+    inputBorder: '#2A2F30' as ColorValue,
+    inputPlaceholder: '#787F85' as ColorValue,
+    inputFocus: '#0A7EA4' as ColorValue,
+
+    // Button colors
+    buttonPrimary: '#0A7EA4' as ColorValue,
+    buttonPrimaryHover: '#A1CEDC' as ColorValue,
+    buttonSecondary: '#1A1D1E' as ColorValue,
+    buttonSecondaryHover: '#202425' as ColorValue,
+    buttonDisabled: '#2A2F30' as ColorValue,
+    buttonText: '#ECEDEE' as ColorValue,
+    buttonTextSecondary: '#ECEDEE' as ColorValue,
   },
 } as const;
 
