@@ -1,5 +1,5 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-turbo run lint --filter=[HEAD^1]
-pnpm lint-staged
+pnpm turbo run lint --filter=[HEAD^1]
+pnpm exec lint-staged
